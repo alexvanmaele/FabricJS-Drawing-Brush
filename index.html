@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <title>Drawing tool test</title>
+        <script data-main='app' src='js/vendor/require.js'></script>
+        <script src='js/vendor/jquery.js'></script>
+        <script src='js/vendor/bootstrap.min.js'></script>
+        <link rel='stylesheet' href='css/bootstrap.css'>
+            <style>
+                html
+                {
+                    padding: 2em 0;
+                }
+                body
+                {
+                    background-color: #4F493E;
+                }
+                *
+                {
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none;
+                    -khtml-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                }
+                .canvas-container
+                {
+                    width: 100%;
+                    background-color: #FFF;
+                }
+                .canvas-container
+                {
+                    background-image:  url('img/ricepaper/top.png'), url('img/ricepaper/middle.png'), url('img/ricepaper/bottom.png');
+                    background-size:  auto, auto, auto;
+                }
+                .row
+                {
+                    margin-top: 1em;
+                }
+                .colourPicker
+                {
+                    color: white;
+                }
+                .noGlow
+                {
+                    outline: none !important;
+                }
+                .btnPickColour
+                {
+                    margin: 0.15em;
+                }
+                .brushOpacityToggle
+                {
+                    margin-top: 0.5em;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='container-fluid'>
+                <div class='row outerCanvasContainer'>
+                    <canvas id='mainCanvas'></canvas>
+                </div>
+                <div class='row brushOptions'>
+                    <div class='col-xs-6 brushSizeOptions'>
+                        <div id='brushSizeButtons' class='btn-group'>
+                            <button type='button' class='btn active' value='1'>Small</button>
+                            <button type='button' class='btn' value='2'>Medium</button>
+                            <button type='button' class='btn' value='3'>Large</button>
+                        </div>
+                    </div>
+                    <div class='col-xs-3'>
+                        <label for='colourPicker' class='colourPicker'>Colour:</label>
+                        <input type='color' id='colourPicker'>
+                        <div id="brushOpacityToggle" class="btn-group brushOpacityToggle">
+                            <button type='button' class='btn active' value='1'>Full</button>
+                            <button type='button' class='btn' value='0.5'>Half</button>
+                        </div>
+                    </div>
+                    <div class='col-xs-3'>
+                        <div id='colourPaletteButtons'>
+                            <!--Dynamically generate colour palette here-->
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type='button' class='btn btn-danger' id='btnClearCanvas'>Clear</button>
+                    </div>
+                </div>
+            </div>
+        </body>
+    </html>
