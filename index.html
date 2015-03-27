@@ -51,7 +51,7 @@
                 {
                     margin: 0.15em;
                 }
-                .brushOpacityToggle
+                .brushSettings
                 {
                     margin-top: 0.5em;
                 }
@@ -73,9 +73,13 @@
                     <div class='col-xs-3'>
                         <label for='colourPicker' class='colourPicker'>Colour:</label>
                         <input type='color' id='colourPicker'>
-                        <div id="brushOpacityToggle" class="btn-group brushOpacityToggle">
+                        <div id='brushOpacityToggle' class='btn-group brushSettings brushOpacityToggle'>
                             <button type='button' class='btn active' value='1'>Full</button>
                             <button type='button' class='btn' value='0.5'>Half</button>
+                        </div>
+                         <div id='brushFillModeToggle' class='btn-group brushSettings brushFillModeToggle'>
+                            <button type='button' class='btn active' value='false'>Fill off</button>
+                            <button type='button' class='btn' value='true'>Fill on</button>
                         </div>
                     </div>
                     <div class='col-xs-3'>
@@ -84,8 +88,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
+                <div class='row'>
+                    <div class='col-md-12'>
                         <button type='button' class='btn btn-danger' id='btnClearCanvas'>Clear</button>
                     </div>
                 </div>

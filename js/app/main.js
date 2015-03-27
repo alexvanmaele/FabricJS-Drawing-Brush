@@ -11,10 +11,9 @@ define(function(require)
         console.log('Canvas loaded');
         console.log(canvas);
     }
-
     var drawingColour = 'rgba(0, 0, 0, 1)';
     var drawingOpacity = 1;
-
+    var drawingFillModeOn = false;
     window.addEventListener('resize', resizeCanvas, false);
 
     function resizeCanvas()
@@ -47,7 +46,7 @@ define(function(require)
         var brushSize = parseInt($(this).val());
         // How much brush sizes should vary
         var brushSizeMultiplier = 5;
-        console.log(brushSize);
+        //console.log(brushSize);
         if (canvas.freeDrawingBrush)
         {
             canvas.freeDrawingBrush.width = brushSize * brushSizeMultiplier || 1;
@@ -98,7 +97,6 @@ define(function(require)
             var selectedColour = $(this).css('background-color');
             //canvas.freeDrawingBrush.color = selectedColour;
             setDrawingColour(selectedColour);
-
             $(this).css(
             {
                 'box-shadow': 'inset 0px 0px 0px 1px ' + invertRGB(selectedColour)
@@ -123,16 +121,29 @@ define(function(require)
             //console.log(newColor);
             setDrawingOpacity(opacity);
         });
-        canvas.on('path:created', function(path)
+        canvas.on('path:created', function(pathContainer)
         {
-            //console.log('created path:');
-            //console.log(path);
+            //console.log('created path container:');
+            //console.log(pathContainer);
+            if (drawingFillModeOn === true)
+            {
+                pathContainer.path.fill = drawingColour;
+                canvas.renderAll();
+                console.log('filled!');
+            }
         });
         canvas.on('mouse:down', function()
         {
             //Refresh colour in case a new one got selected
             //var updatedColour = changeRGBOpacity(drawingColour, drawingOpacity);
             //canvas.freeDrawingBrush.color = updatedColour;
+        });
+        $('#brushFillModeToggle button').click(function()
+        {
+            $('#brushFillModeToggle button').addClass('active').not(this).removeClass('active');
+            var fillModeOn = $(this).val();
+            drawingFillModeOn = fillModeOn === 'true' ? true : false;
+            console.log(drawingFillModeOn);
         });
 
         function changeRGBOpacity(rgb, opacity)
@@ -156,7 +167,7 @@ define(function(require)
 
         function setDrawingColour(RGBColour)
         {
-            drawingColour =  changeRGBOpacity(RGBColour, drawingOpacity);
+            drawingColour = changeRGBOpacity(RGBColour, drawingOpacity);
             updateBrush();
         }
 
@@ -170,7 +181,7 @@ define(function(require)
         function updateBrush()
         {
             canvas.freeDrawingBrush.color = drawingColour;
-            console.log(drawingColour);
+            //console.log(drawingColour);
         }
     }
 });
