@@ -5,7 +5,7 @@
 
     function HistoryQueue()
     {
-        // Initialize array with first element as null
+        // First element is always zero, representing an 'empty' history state
         queue = [null];
         currentPosition = 0;
     }
@@ -42,12 +42,10 @@
             return null;
         }
     };
-    //TODO:  get rid of this?
     HistoryQueue.prototype.getCurrent = function()
     {
         return queue[currentPosition];
     };
-    //TODO: get rid of this?
     HistoryQueue.prototype.getCurrentPosition = function()
     {
         return currentPosition;
