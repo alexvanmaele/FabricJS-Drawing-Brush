@@ -38,6 +38,8 @@ define(function(require)
     $('#btnClearCanvas').click(function()
     {
         canvas.clear();
+        // Reset history
+        objectHistory = new QueueFactory.HistoryQueue();
     });
     $('#colourPicker').on('change', function()
     {
