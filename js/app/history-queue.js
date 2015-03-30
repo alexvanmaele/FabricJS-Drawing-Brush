@@ -5,6 +5,7 @@
 
     function HistoryQueue()
     {
+        // Initialize array with first element as null
         queue = [null];
         currentPosition = 0;
     }
