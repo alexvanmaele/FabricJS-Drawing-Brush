@@ -22,21 +22,6 @@ define(function(require)
     }
     // MAIN
     resizeCanvas();
-    // Render test
-    var rect = new fabric.Rect(
-    {
-        fill: 'red',
-        width: 50,
-        height: 50,
-        angle: 45
-    });
-    canvas.add(rect);
-    rect.set(
-    {
-        left: window.innerWidth / 2,
-        top: 50
-    });
-    canvas.renderAll();
     $('#brushSizeButtons button').click(function()
     {
         $('.brushSizeOptions button').addClass('active').not(this).removeClass('active');
@@ -118,7 +103,6 @@ define(function(require)
             if (typeof object.target.addedByRedo === 'undefined')
             {
                 objectHistory.add(object.target);
-                console.log(objectHistory.toString());
             }
         });
         canvas.on('path:created', function(pathContainer)
@@ -147,12 +131,10 @@ define(function(require)
             {
                 console.log('Nothing to undo');
             }
-            console.log(objectHistory.toString());
         });
         $('#btnRedo').click(function()
         {
             var nextItem = objectHistory.redo();
-            console.log(objectHistory.toString());
             if (nextItem !== null)
             {
                 nextItem.addedByRedo = true;
