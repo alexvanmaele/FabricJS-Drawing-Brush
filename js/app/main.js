@@ -2,14 +2,16 @@ define(function(require)
 {
     require('fabric');
     var $ = require('jquery');
+    require('app/history-queue');
+    var objectHistory = new QueueFactory.HistoryQueue();
     var canvas = new fabric.Canvas('mainCanvas',
     {
         isDrawingMode: true
     });
     if (canvas)
     {
-        console.log('Canvas loaded');
-        console.log(canvas);
+        //console.log('Canvas loaded');
+        //console.log(canvas);
     }
     var drawingColour = 'rgba(0, 0, 0, 1)';
     var drawingOpacity = 1;
@@ -40,7 +42,7 @@ define(function(require)
         top: 50
     });
     canvas.renderAll();
-    $('.brushSizeOptions button').click(function()
+    $('#brushSizeButtons button').click(function()
     {
         $('.brushSizeOptions button').addClass('active').not(this).removeClass('active');
         var brushSize = parseInt($(this).val());
@@ -53,7 +55,7 @@ define(function(require)
         }
     });
     // Simulate click to initialize brush size
-    $('.brushSizeOptions button:nth(1)').click();
+    $('#brushSizeButtons button:nth(1)').click();
     $('#btnClearCanvas').click(function()
     {
         canvas.clear();
@@ -121,15 +123,21 @@ define(function(require)
             //console.log(newColor);
             setDrawingOpacity(opacity);
         });
+        canvas.on('object:added', function(object)
+        {
+            if(typeof object.target.addedByRedo === 'undefined')
+            {
+                objectHistory.add(object.target);
+                console.log(objectHistory.toString());
+            }
+        });
         canvas.on('path:created', function(pathContainer)
         {
-            //console.log('created path container:');
-            //console.log(pathContainer);
             if (drawingFillModeOn === true)
             {
                 pathContainer.path.fill = drawingColour;
                 canvas.renderAll();
-                console.log('filled!');
+                //console.log('filled!');
             }
         });
         canvas.on('mouse:down', function()
@@ -143,7 +151,37 @@ define(function(require)
             $('#brushFillModeToggle button').addClass('active').not(this).removeClass('active');
             var fillModeOn = $(this).val();
             drawingFillModeOn = fillModeOn === 'true' ? true : false;
-            console.log(drawingFillModeOn);
+            //console.log(drawingFillModeOn);
+        });
+        $('#btnUndo').click(function()
+        {
+            var currentItem = objectHistory.getCurrent();
+
+            if (currentItem !== null)
+            {
+                //canvas.remove(previousItem);
+                canvas.remove(currentItem);
+                objectHistory.undo();
+            }
+            else
+            {
+                console.log('previousItem was null');
+            }
+            console.log(objectHistory.toString());
+        });
+        $('#btnRedo').click(function()
+        {
+            var nextItem = objectHistory.redo();
+            console.log(objectHistory.toString());
+            if (nextItem !== null)
+            {
+                nextItem.addedByRedo = true;
+                canvas.add(nextItem);
+            }
+            else
+            {
+                console.log('nextItem was null');
+            }
         });
 
         function changeRGBOpacity(rgb, opacity)
