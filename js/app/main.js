@@ -8,11 +8,6 @@ define(function(require)
     {
         isDrawingMode: true
     });
-    if (canvas)
-    {
-        //console.log('Canvas loaded');
-        //console.log(canvas);
-    }
     var drawingColour = 'rgba(0, 0, 0, 1)';
     var drawingOpacity = 1;
     var drawingFillModeOn = false;
