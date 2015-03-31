@@ -40,6 +40,7 @@ define(function(require)
         canvas.clear();
         // Reset history
         objectHistory = new QueueFactory.HistoryQueue();
+        updateCanvasExportCode();
     });
     $('#colourPicker').on('change', function()
     {
@@ -105,6 +106,7 @@ define(function(require)
             if (typeof object.target.addedByRedo === 'undefined')
             {
                 objectHistory.add(object.target);
+                updateCanvasExportCode();
             }
         });
         canvas.on('path:created', function(pathContainer)
@@ -128,6 +130,7 @@ define(function(require)
             {
                 canvas.remove(currentItem);
                 objectHistory.undo();
+                updateCanvasExportCode();
             }
             else
             {
@@ -141,48 +144,55 @@ define(function(require)
             {
                 nextItem.addedByRedo = true;
                 canvas.add(nextItem);
+                updateCanvasExportCode();
             }
             else
             {
                 console.log('Nothing to redo');
             }
         });
+    }
 
-        function changeRGBOpacity(rgb, opacity)
+    function changeRGBOpacity(rgb, opacity)
+    {
+        var rgba;
+        // Don't convert rgba, just change opacity
+        if (rgb.indexOf('rgba') !== -1)
         {
-            var rgba;
-            // Don't convert rgba, just change opacity
-            if (rgb.indexOf('rgba') !== -1)
-            {
-                rgba = rgb;
-                var lastCommaPosition = rgba.search(/\,(?!.*\,)/);
-                rgba = rgba.slice(0, lastCommaPosition + 1);
-                rgba += ' ' + opacity + ')';
-            }
-            else
-            {
-                rgba = rgb.replace('rgb(', 'rgba(');
-                rgba = rgba.replace(')', ', ' + opacity + ')');
-            }
-            return rgba;
+            rgba = rgb;
+            var lastCommaPosition = rgba.search(/\,(?!.*\,)/);
+            rgba = rgba.slice(0, lastCommaPosition + 1);
+            rgba += ' ' + opacity + ')';
         }
+        else
+        {
+            rgba = rgb.replace('rgb(', 'rgba(');
+            rgba = rgba.replace(')', ', ' + opacity + ')');
+        }
+        return rgba;
+    }
 
-        function setDrawingColour(RGBColour)
-        {
-            drawingColour = changeRGBOpacity(RGBColour, drawingOpacity);
-            updateBrush();
-        }
+    function setDrawingColour(RGBColour)
+    {
+        drawingColour = changeRGBOpacity(RGBColour, drawingOpacity);
+        updateBrush();
+    }
 
-        function setDrawingOpacity(opacity)
-        {
-            drawingOpacity = opacity;
-            drawingColour = changeRGBOpacity(drawingColour, opacity);
-            updateBrush();
-        }
+    function setDrawingOpacity(opacity)
+    {
+        drawingOpacity = opacity;
+        drawingColour = changeRGBOpacity(drawingColour, opacity);
+        updateBrush();
+    }
 
-        function updateBrush()
-        {
-            canvas.freeDrawingBrush.color = drawingColour;
-        }
+    function updateBrush()
+    {
+        canvas.freeDrawingBrush.color = drawingColour;
+    }
+
+    function updateCanvasExportCode()
+    {
+        var base64Code = JSON.stringify(canvas);
+        $('#txtBase64Export').val(base64Code);
     }
 });
