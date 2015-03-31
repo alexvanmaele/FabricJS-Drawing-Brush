@@ -12,14 +12,6 @@ define(function(require)
     var drawingOpacity = 1;
     var drawingFillModeOn = false;
     window.addEventListener('resize', resizeCanvas, false);
-
-    function resizeCanvas()
-    {
-        canvas.setHeight(500);
-        canvas.setWidth(window.innerWidth);
-        canvas.calcOffset();
-        canvas.renderAll();
-    }
     // MAIN
     resizeCanvas();
     $('#brushSizeButtons button').click(function()
@@ -47,6 +39,86 @@ define(function(require)
         canvas.freeDrawingBrush.color = this.value;
     });
     renderColourPalette();
+    $('.btnPickColour').click(function()
+    {
+        $('.btnPickColour').addClass('active').not(this).removeClass('active').css(
+        {
+            'box-shadow': 'initial'
+        });
+        var selectedColour = $(this).css('background-color');
+        setDrawingColour(selectedColour);
+        $(this).css(
+        {
+            'box-shadow': 'inset 0px 0px 0px 1px ' + invertRGB(selectedColour)
+        });
+    });
+    $('.btnPickColour:first').addClass('active').click();
+    $('#brushOpacityToggle button').click(function()
+    {
+        $('#brushOpacityToggle button').addClass('active').not(this).removeClass('active');
+        var brushOpacity = parseInt($(this).val());
+        var currentColor = canvas.freeDrawingBrush.color;
+        var opacity = parseFloat($(this).val());
+        setDrawingOpacity(opacity);
+    });
+    canvas.on('object:added', function(object)
+    {
+        if (typeof object.target.addedByRedo === 'undefined')
+        {
+            objectHistory.add(object.target);
+            updateCanvasExportCode();
+        }
+    });
+    canvas.on('path:created', function(pathContainer)
+    {
+        if (drawingFillModeOn === true)
+        {
+            pathContainer.path.fill = drawingColour;
+            canvas.renderAll();
+        }
+    });
+    $('#brushFillModeToggle button').click(function()
+    {
+        $('#brushFillModeToggle button').addClass('active').not(this).removeClass('active');
+        var fillModeOn = $(this).val();
+        drawingFillModeOn = fillModeOn === 'true' ? true : false;
+    });
+    $('#btnUndo').click(function()
+    {
+        var currentItem = objectHistory.getCurrent();
+        if (currentItem !== null)
+        {
+            canvas.remove(currentItem);
+            objectHistory.undo();
+            updateCanvasExportCode();
+        }
+        else
+        {
+            console.log('Nothing to undo');
+        }
+    });
+    $('#btnRedo').click(function()
+    {
+        var nextItem = objectHistory.redo();
+        if (nextItem !== null)
+        {
+            nextItem.addedByRedo = true;
+            canvas.add(nextItem);
+            updateCanvasExportCode();
+        }
+        else
+        {
+            console.log('Nothing to redo');
+        }
+    });
+
+    function resizeCanvas()
+    {
+        canvas.setHeight(500);
+        canvas.setWidth(window.innerWidth);
+        canvas.calcOffset();
+        canvas.renderAll();
+    }
 
     function renderColourPalette()
     {
@@ -72,85 +144,13 @@ define(function(require)
             }
             coloursAdded++;
         });
-        $('.btnPickColour').click(function()
-        {
-            $('.btnPickColour').addClass('active').not(this).removeClass('active').css(
-            {
-                'box-shadow': 'initial'
-            });
-            var selectedColour = $(this).css('background-color');
-            setDrawingColour(selectedColour);
-            $(this).css(
-            {
-                'box-shadow': 'inset 0px 0px 0px 1px ' + invertRGB(selectedColour)
-            });
-        });
-        $('.btnPickColour:first').addClass('active').click();
+    }
 
-        function invertRGB(rgba)
-        {
-            rgb = [].slice.call(arguments).join(",").replace(/rgb\(|\)|rgba\(|\)|\s/gi, '').split(',');
-            for (var i = 0; i < rgb.length; i++) rgb[i] = (i === 3 ? 1 : 255) - rgb[i];
-            return 'rgb(' + rgb.join(", ") + ')';
-        }
-        $('#brushOpacityToggle button').click(function()
-        {
-            $('#brushOpacityToggle button').addClass('active').not(this).removeClass('active');
-            var brushOpacity = parseInt($(this).val());
-            var currentColor = canvas.freeDrawingBrush.color;
-            var opacity = parseFloat($(this).val());
-            setDrawingOpacity(opacity);
-        });
-        canvas.on('object:added', function(object)
-        {
-            if (typeof object.target.addedByRedo === 'undefined')
-            {
-                objectHistory.add(object.target);
-                updateCanvasExportCode();
-            }
-        });
-        canvas.on('path:created', function(pathContainer)
-        {
-            if (drawingFillModeOn === true)
-            {
-                pathContainer.path.fill = drawingColour;
-                canvas.renderAll();
-            }
-        });
-        $('#brushFillModeToggle button').click(function()
-        {
-            $('#brushFillModeToggle button').addClass('active').not(this).removeClass('active');
-            var fillModeOn = $(this).val();
-            drawingFillModeOn = fillModeOn === 'true' ? true : false;
-        });
-        $('#btnUndo').click(function()
-        {
-            var currentItem = objectHistory.getCurrent();
-            if (currentItem !== null)
-            {
-                canvas.remove(currentItem);
-                objectHistory.undo();
-                updateCanvasExportCode();
-            }
-            else
-            {
-                console.log('Nothing to undo');
-            }
-        });
-        $('#btnRedo').click(function()
-        {
-            var nextItem = objectHistory.redo();
-            if (nextItem !== null)
-            {
-                nextItem.addedByRedo = true;
-                canvas.add(nextItem);
-                updateCanvasExportCode();
-            }
-            else
-            {
-                console.log('Nothing to redo');
-            }
-        });
+    function invertRGB(rgba)
+    {
+        rgb = [].slice.call(arguments).join(",").replace(/rgb\(|\)|rgba\(|\)|\s/gi, '').split(',');
+        for (var i = 0; i < rgb.length; i++) rgb[i] = (i === 3 ? 1 : 255) - rgb[i];
+        return 'rgb(' + rgb.join(", ") + ')';
     }
 
     function changeRGBOpacity(rgb, opacity)
